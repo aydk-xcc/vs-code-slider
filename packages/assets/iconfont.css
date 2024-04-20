@@ -1,0 +1,171 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 4511939 */
+  src: url('./iconfont.woff2?t=1713377554562') format('woff2'),
+       url('./iconfont.woff?t=1713377554562') format('woff'),
+       url('./iconfont.ttf?t=1713377554562') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.vs-npm:before {
+  content: "\e9aa";
+}
+
+.vs-cjs:before {
+  content: "\e6f0";
+}
+
+.vs-vue:before {
+  content: "\eaf3";
+}
+
+.vs-open-all:before {
+  content: "\e6b2";
+}
+
+.vs-close-all:before {
+  content: "\e6b3";
+}
+
+.vs-find:before {
+  content: "\e604";
+}
+
+.vs-target:before {
+  content: "\e6ad";
+}
+
+.vs-add-file:before {
+  content: "\e66a";
+}
+
+.vs-add-folder:before {
+  content: "\e677";
+}
+
+.vs-right:before {
+  content: "\e63a";
+}
+
+.vs-tpl:before {
+  content: "\e6a9";
+}
+
+.vs-open:before {
+  content: "\e60d";
+}
+
+.vs-xml:before {
+  content: "\e945";
+}
+
+.vs-default:before {
+  content: "\e6a8";
+}
+
+.vs-image:before {
+  content: "\e7b3";
+}
+
+.vs-c:before {
+  content: "\e670";
+}
+
+.vs-react:before {
+  content: "\e79a";
+}
+
+.vs-license:before {
+  content: "\e612";
+}
+
+.vs-setting:before {
+  content: "\e60e";
+}
+
+.vs-log:before {
+  content: "\e649";
+}
+
+.vs-java:before {
+  content: "\e6e0";
+}
+
+.vs-python:before {
+  content: "\e739";
+}
+
+.vs-git:before {
+  content: "\e72a";
+}
+
+.vs-less:before {
+  content: "\e63c";
+}
+
+.vs-ts:before {
+  content: "\e664";
+}
+
+.vs-css:before {
+  content: "\e701";
+}
+
+.vs-md:before {
+  content: "\e665";
+}
+
+.vs-tsconfig:before {
+  content: "\e6a3";
+}
+
+.vs-js:before {
+  content: "\e688";
+}
+
+.vs-json:before {
+  content: "\e618";
+}
+
+.vs-go:before {
+  content: "\eba6";
+}
+
+.vs-html:before {
+  content: "\e606";
+}
+
+.vs-yaml:before {
+  content: "\e61e";
+}
+
+.vs-c3:before {
+  content: "\e6da";
+}
+
+.vs-c2:before {
+  content: "\ebcb";
+}
+
+.vs-readme:before {
+  content: "\e681";
+}
+
+.vs-zhankai:before {
+  content: "\e60f";
+}
+
+.vs-scss:before {
+  content: "\e64d";
+}
+
+.vs-svg:before {
+  content: "\e607";
+}
+
