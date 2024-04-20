@@ -4,7 +4,6 @@
 >
 import {computed, ref} from 'vue';
 import {dealFilePath, fileSorts} from './utils/utils';
-import Vue from 'vue';
 import { ElTree } from 'element-plus';
 import {ArrowRightBold} from '@element-plus/icons-vue';
 
@@ -37,12 +36,10 @@ const defaultProps = {
 let fileList = computed((): Array<FileData> => {
     let list = dealFilePath(props.files);
     fileSorts(list);
-    console.log(list);
     return list;
 })
 
 let baseDirName = computed(() => {
-    console.log(fileList);
     if (!props.baseDir && fileList.value.length === 1) {
         return fileList.value[0].name;
     } else if (props.baseDir) {
@@ -181,7 +178,7 @@ function expandRecursive(node, value) {
             </div>
         </div>
         <div class="el-tree-view">
-            <el-tree
+            <ElTree
                 ref="elTreeRef"
                 :data="fileList"
                 :default-expanded-keys="defaultExpandKeys"
@@ -202,7 +199,7 @@ function expandRecursive(node, value) {
                     <span></span>
                 </span>
                 </template>
-            </el-tree>
+            </ElTree>
         </div>
     </div>
 </template>
