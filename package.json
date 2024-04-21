@@ -1,8 +1,9 @@
 {
   "name": "vs-code-slider",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "type": "module",
   "main": "lib/vs-code-slider.es.js",
+  "author": "aydk-xcc",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
