@@ -3,7 +3,7 @@
     lang="ts"
 >
 import {computed, ref} from 'vue';
-import {dealFilePath, fileSorts} from './utils/utils';
+import {dealFilePath, fileSorts, getFileIcon} from './utils/utils';
 import { ElTree } from 'element-plus';
 import {ArrowRightBold} from '@element-plus/icons-vue';
 
@@ -19,6 +19,7 @@ let props = defineProps<{
     theme: string,
     width: number,
     files: string[],
+    bgColor: string,
     defaultOpen: string,
     currentFile: string,
 }>();
@@ -49,84 +50,17 @@ let baseDirName = computed(() => {
     }
 })
 
+const theme = computed(() => {
+    if (['dark', 'light'].includes(props.theme)) {
+        return props.theme;
+    }
+    return 'dark';
+});
+
 function  handleNodeClick() {
 
 }
 
-function getFileIcon(fileName) {
-    let arr = fileName.split('.');
-    let type = (arr.pop() || '').toLowerCase();
-    switch (type) {
-        case 'vue':
-            return 'iconfont vs-vue icon-g';
-        case 'js':
-            return 'iconfont vs-js icon-y';
-        case 'go':
-            return 'iconfont vs-go icon-b';
-        case 'ts':
-            return 'iconfont vs-ts icon-b';
-        case 'tpl':
-            return 'iconfont vs-tpl icon-y';
-        case 'xml':
-            return 'iconfont vs-xml icon-r';
-        case 'png':
-        case 'jpg':
-        case 'jpeg':
-        case 'gif':
-            return 'iconfont vs-image icon-purple';
-        case 'c':
-            return 'iconfont vs-c icon-b';
-        case 'jsx':
-            return 'iconfont vs-react icon-b';
-        case 'license':
-            return 'iconfont vs-license icon-y';
-        case 'setting':
-            return 'iconfont vs-setting';
-        case 'changelog':
-            return 'iconfont vs-log';
-        case 'java':
-        case 'jar':
-            return 'iconfont vs-java icon-b';
-        case 'py':
-            return 'iconfont vs-python icon-b';
-        case 'git':
-        case 'gitignore':
-            return 'iconfont vs-git';
-        case 'less':
-            return 'iconfont vs-less icon-purple';
-        case 'scss':
-        case 'sass':
-            return 'iconfont vs-scss icon-wine-red';
-        case 'css':
-            return 'iconfont vs-css icon-b';
-        case 'md':
-            if (fileName.toLowerCase() === 'readme.md') {
-                return 'iconfont vs-readme icon-b';
-            }
-            return 'iconfont vs-md icon-b';
-        case 'json':
-            if (fileName === 'tsconfig.json') {
-                return 'iconfont vs-tsconfig icon-b';
-            }
-            return 'iconfont vs-json icon-y';
-        case 'html':
-            return 'iconfont vs-html icon-pink';
-        case 'yaml':
-            return 'iconfont vs-yaml icon-purple';
-        case 'cs':
-            return 'iconfont vs-c3 icon-b';
-        case 'cpp':
-            return 'iconfont vs-c2 icon-b';
-        case 'svg':
-            return 'iconfont vs-svg icon-purple';
-        case 'npmrc':
-            return 'iconfont vs-npm icon-r';
-        case 'cjs':
-            return 'iconfont vs-cjs icon-cyan';
-        default:
-            return 'iconfont vs-default icon-w';
-    }
-}
 
 function  openAll() {
     openAllState.value = true;
@@ -152,8 +86,10 @@ function expandRecursive(node, value) {
 <template>
     <div
         class="vs-slider"
+        :class="theme"
         :style="{
             width: `${width}px`,
+            backgroundColor: props.bgColor
         }"
     >
         <div class="header">
@@ -211,10 +147,58 @@ function expandRecursive(node, value) {
 }
 
 .vs-slider {
+    height: 100%;
+    padding: 5px 0;
+}
+
+.dark {
     background-color: #2d3047;
     color: #fff;
-    height: 100%;
-    padding: 5px 10px;
+
+    ::v-deep .el-tree-node {
+        &:focus>.el-tree-node__content {
+            background-color: rgba(255, 255, 255, .1);
+        }
+        &:hover>.el-tree-node__content {
+            background-color: rgba(255, 255, 255, .1);
+            color: white;
+            opacity: .9;
+        }
+
+        &.is-current>.el-tree-node__content {
+            background-color: #2254f4 !important;
+            border: 1px solid #9bc0f4;
+            color: white;
+        }
+
+
+    }
+}
+
+.light {
+    background-color: #f2f2f2;
+    color: #333333;
+    .icon-w {
+        color: #616162;
+    }
+
+    ::v-deep .el-tree-node {
+        &:focus>.el-tree-node__content {
+            background-color: rgba(255, 255, 255, .1);
+        }
+        &:hover>.el-tree-node__content {
+            background-color: rgba(255, 255, 255, .1);
+            opacity: .9;
+        }
+
+        &.is-current>.el-tree-node__content {
+            background-color: #2254f4 !important;
+            border: 1px solid #9bc0f4;
+            color: white;
+        }
+
+
+    }
 }
 
 .header {
@@ -222,6 +206,7 @@ function expandRecursive(node, value) {
     flex-direction: row;
     height: 30px;
     justify-content: space-between;
+    padding: 0 10px;
 
 }
 
@@ -235,24 +220,6 @@ function expandRecursive(node, value) {
 
 ::v-deep .is-current {
     opacity: .8;
-}
-
-::v-deep .el-tree-node {
-    &:focus>.el-tree-node__content {
-        background-color: #2d3047;
-    }
-    &:hover>.el-tree-node__content {
-        background-color: #3d4057;
-        color: white;
-        opacity: .9;
-    }
-
-    &.is-current>.el-tree-node__content {
-        background-color: rgba(60, 180, 245, .5) !important;
-        border: 1px solid #409eff;
-    }
-
-
 }
 
 .custom-tree-node {

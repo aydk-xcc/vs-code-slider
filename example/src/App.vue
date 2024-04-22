@@ -20,7 +20,9 @@ const arr = ref([
     'vue/d.js',
     'vue/README.md',
     'vue/12.vue',
-    'vue/test.md'
+    'vue/CHANGELOG',
+    'vue/CHANGELOG.ms',
+    'vue/test.txt'
 ]);
 
 </script>
@@ -31,6 +33,7 @@ const arr = ref([
         <el-container class="content-main">
             <el-main>
                 <VsCodeSlider
+                    theme="light"
                     :files="arr"
                 />
             </el-main>
