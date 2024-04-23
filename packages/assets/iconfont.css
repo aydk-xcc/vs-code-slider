@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 4511939 */
-  src: url('./iconfont.woff2?t=1713377554562') format('woff2'),
-       url('./iconfont.woff?t=1713377554562') format('woff'),
-       url('./iconfont.ttf?t=1713377554562') format('truetype');
+  src: url('iconfont.woff2?t=1713844246062') format('woff2'),
+       url('iconfont.woff?t=1713844246062') format('woff'),
+       url('iconfont.ttf?t=1713844246062') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.vs-folder-line:before {
+  content: "\eabe";
+}
+
+.vs-folder:before {
+  content: "\eac5";
 }
 
 .vs-npm:before {
@@ -49,16 +57,8 @@
   content: "\e677";
 }
 
-.vs-right:before {
-  content: "\e63a";
-}
-
 .vs-tpl:before {
   content: "\e6a9";
-}
-
-.vs-open:before {
-  content: "\e60d";
 }
 
 .vs-xml:before {
@@ -155,10 +155,6 @@
 
 .vs-readme:before {
   content: "\e681";
-}
-
-.vs-zhankai:before {
-  content: "\e60f";
 }
 
 .vs-scss:before {

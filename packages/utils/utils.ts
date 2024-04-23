@@ -43,11 +43,20 @@ export function dealFilePath(filePaths: Array<string>) {
             let index = tempArr.findIndex(item => item.name === paths[start]);
             if (start === paths.length - 1) {
                 if (index < 0 || tempArr[index].isDir !== isDir) {
-                    tempArr.push({
-                        name: paths[start],
-                        path: path,
-                        isDir: false
-                    });
+                    if (isDir) {
+                        tempArr.push({
+                            name: paths[start],
+                            path: path,
+                            isDir: isDir,
+                            children: []
+                        });
+                    } else {
+                        tempArr.push({
+                            name: paths[start],
+                            path: path,
+                            isDir: isDir
+                        });
+                    }
                 }
             } else {
                 if (!isExist || index < 0 || !tempArr[index].isDir) {
@@ -130,6 +139,7 @@ export function getFileIcon(fileName: string) {
             return 'iconfont vs-json icon-y';
         case 'html':
             return 'iconfont vs-html icon-pink';
+        case 'yml':
         case 'yaml':
             return 'iconfont vs-yaml icon-purple';
         case 'cs':

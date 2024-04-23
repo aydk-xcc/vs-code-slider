@@ -6,6 +6,7 @@ import {computed, ref} from 'vue';
 import {dealFilePath, fileSorts, getFileIcon} from './utils/utils';
 import { ElTree } from 'element-plus';
 import {ArrowRightBold} from '@element-plus/icons-vue';
+import RightContentMenu from './components/RightContentMenu.vue';
 
 declare interface FileData {
     name: string;
@@ -24,7 +25,10 @@ let props = defineProps<{
     currentFile: string,
 }>();
 
+const emits = defineEmits(['fileClick']);
+
 const elTreeRef = ref(null);
+const rightContentMenuRef = ref(null);
 
 const width = ref(props.width || 280);
 const openAllState = ref(false);
@@ -54,11 +58,19 @@ const theme = computed(() => {
     if (['dark', 'light'].includes(props.theme)) {
         return props.theme;
     }
-    return 'dark';
+    return '';
 });
 
-function  handleNodeClick() {
+function  handleNodeClick(obj, node, TreeNode, Event) {
+    console.log(obj, node, TreeNode, Event);
+    emits('fileClick', obj, node, TreeNode, Event);
+}
 
+function handleContentMenuClick(event, data, node, TreeNode) {
+    if (rightContentMenuRef && rightContentMenuRef.value) {
+        console.log(rightContentMenuRef.value);
+        rightContentMenuRef.value.showMenu(event, data, node, TreeNode);
+    }
 }
 
 
@@ -113,7 +125,11 @@ function expandRecursive(node, value) {
                 ></i>
             </div>
         </div>
-        <div class="el-tree-view">
+        <div
+            class="el-tree-view"
+            @mouseup.right="handleContentMenuClick"
+            @contextmenu.prevent
+        >
             <ElTree
                 ref="elTreeRef"
                 :data="fileList"
@@ -124,23 +140,38 @@ function expandRecursive(node, value) {
                 :highlight-current="true"
                 :props="defaultProps"
                 @node-click="handleNodeClick"
+                @node-contextmenu="handleContentMenuClick"
             >
                 <template #default="{ node, data }">
-                <span class="custom-tree-node">
-                    <i
-                        v-if="!data.isDir"
-                        :class="getFileIcon(data.name)"
-                    ></i>
-                    <span class="name">{{ data.name }}</span>
-                    <span></span>
-                </span>
+                    <span
+                        class="custom-tree-node"
+                    >
+                        <i
+                            v-if="!data.isDir"
+                            :class="getFileIcon(data.name)"
+                        ></i>
+                        <i v-else
+                           class="icon iconfont"
+                           :class="theme === 'light' ? 'vs-folder-line' : 'vs-folder'"
+                        ></i>
+                        <span class="name">{{ data.name }}</span>
+                        <span></span>
+                    </span>
                 </template>
             </ElTree>
         </div>
+        <RightContentMenu
+            ref="rightContentMenuRef"
+        />
     </div>
 </template>
 
 <style lang="scss" scoped>
+
+.vs-slider {
+    position: relative;
+    color: #3c3c3c;
+}
 
 .base-dir {
     font-weight: bold;
@@ -151,28 +182,26 @@ function expandRecursive(node, value) {
     padding: 5px 0;
 }
 
+::v-deep .el-tree-node {
+    &:focus>.el-tree-node__content {
+        background-color: rgba(200, 200, 200, .2);
+    }
+    &:hover>.el-tree-node__content {
+        background-color: rgba(200, 200, 200, .2);
+        opacity: .9;
+    }
+
+    &.is-current>.el-tree-node__content {
+        background-color: #2254f4 !important;
+        border: 1px solid #9bc0f4;
+        color: white;
+    }
+}
+
+
 .dark {
     background-color: #2d3047;
     color: #fff;
-
-    ::v-deep .el-tree-node {
-        &:focus>.el-tree-node__content {
-            background-color: rgba(255, 255, 255, .1);
-        }
-        &:hover>.el-tree-node__content {
-            background-color: rgba(255, 255, 255, .1);
-            color: white;
-            opacity: .9;
-        }
-
-        &.is-current>.el-tree-node__content {
-            background-color: #2254f4 !important;
-            border: 1px solid #9bc0f4;
-            color: white;
-        }
-
-
-    }
 }
 
 .light {
@@ -181,25 +210,8 @@ function expandRecursive(node, value) {
     .icon-w {
         color: #616162;
     }
-
-    ::v-deep .el-tree-node {
-        &:focus>.el-tree-node__content {
-            background-color: rgba(255, 255, 255, .1);
-        }
-        &:hover>.el-tree-node__content {
-            background-color: rgba(255, 255, 255, .1);
-            opacity: .9;
-        }
-
-        &.is-current>.el-tree-node__content {
-            background-color: #2254f4 !important;
-            border: 1px solid #9bc0f4;
-            color: white;
-        }
-
-
-    }
 }
+
 
 .header {
     display: flex;

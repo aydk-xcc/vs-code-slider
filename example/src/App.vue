@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { VsCodeSlider } from '../../packages';
+import VsCodeSlider from '../../packages';
 import {ref} from 'vue';
 
 const arr = ref([
@@ -18,12 +18,17 @@ const arr = ref([
     'vue/package/add/b.dd',
     'vue/package/add/dd.txt',
     'vue/d.js',
+    'vue/test2/',
     'vue/README.md',
     'vue/12.vue',
     'vue/CHANGELOG',
     'vue/CHANGELOG.ms',
     'vue/test.txt'
 ]);
+
+function fileClick(obj, node, TreeNode, event) {
+    console.log(obj)
+}
 
 </script>
 
@@ -35,6 +40,7 @@ const arr = ref([
                 <VsCodeSlider
                     theme="light"
                     :files="arr"
+                    @fileClick="fileClick"
                 />
             </el-main>
         </el-container>
