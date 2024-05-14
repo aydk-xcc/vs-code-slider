@@ -2,16 +2,16 @@
 import {ref, defineExpose, reactive, computed, nextTick} from 'vue';
     const menuList = [
         {
+            label: '重命名',
+            key: 'RENAME'
+        },
+        {
             label: '创建文件夹',
             key: 'CREATE_FOLDER'
         },
         {
             label: '创建文件',
             key: 'CREATE_FILE'
-        },
-        {
-            label: '删除',
-            key: 'DELETE'
         },
         {
             label: '复制',
@@ -22,9 +22,9 @@ import {ref, defineExpose, reactive, computed, nextTick} from 'vue';
             key: 'PASTE'
         },
         {
-            label: '重命名',
-            key: 'RENAME'
-        }
+            label: '删除',
+            key: 'DELETE'
+        },
     ];
     const inputRef = ref(null);
     const showMenuStatus = ref(false);
@@ -32,8 +32,11 @@ import {ref, defineExpose, reactive, computed, nextTick} from 'vue';
         top: 0,
         left: 0
     });
+    const isDir = ref(false);
+    const emits = defineEmits(['handleMenu']);
     function showMenu(event, data, node, TreeNode) {
         showMenuStatus.value = true;
+        isDir.value = data.isDir || false;
         position.top = event.clientY;
         position.left = event.clientX;
         nextTick(() => {
@@ -44,7 +47,9 @@ import {ref, defineExpose, reactive, computed, nextTick} from 'vue';
     }
 
     function hiddenMenuStatus() {
-        showMenuStatus.value = false;
+        setTimeout(() => {
+            showMenuStatus.value = false;
+        }, 200);
     }
 
     const positionX = computed( () => {
@@ -54,6 +59,18 @@ import {ref, defineExpose, reactive, computed, nextTick} from 'vue';
     const positionY = computed( () => {
         return position.top;
     });
+
+    const currentMenuList = computed( () => {
+          if (isDir.value) {
+              return menuList;
+          } else {
+              return  menuList.filter(item => !['CREATE_FOLDER', 'CREATE_FILE', 'PASTE'].includes(item.key));
+          }
+    })
+
+    function clickMenu(item) {
+        emits('handleMenu', item.key)
+    }
 
     defineExpose({
         showMenu
@@ -68,9 +85,10 @@ import {ref, defineExpose, reactive, computed, nextTick} from 'vue';
             left: positionX + 'px'
         }"
     >
-        <div v-for="(item, index) in menuList"
+        <div v-for="(item, index) in currentMenuList"
              :key="index"
              class="right-menu-item"
+             @click="clickMenu(item)"
         >
             {{ item.label }}
         </div>

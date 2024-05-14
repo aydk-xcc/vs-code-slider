@@ -62,7 +62,7 @@ export function dealFilePath(filePaths: Array<string>) {
                 if (!isExist || index < 0 || !tempArr[index].isDir) {
                     tempArr.push({
                         name: paths[start],
-                        path: '',
+                        path: paths.slice(0, start + 1).join('/'),
                         isDir: true,
                         children: []
                     });

@@ -43,7 +43,7 @@ pnpm dev
 如何使用组件呢，参考[demo](https://github.com/aydk-xcc/vs-code-slider/blob/master/example/src/App.vue)：
 ```vue
 <script setup lang="ts">
-import { VsCodeSlider } from 'vs-code-slider';
+import VsCodeSlider from 'vs-code-slider';
 import {ref} from 'vue';
 
 const arr = ref([
@@ -91,10 +91,10 @@ const arr = ref([
 待支持
 
 ### 2.5 增加文件夹
-待支持
+已支持
 
 ### 2.6 增加文件
-待支持
+已支持
 
 ### 2.7 配置主题
 待支持
