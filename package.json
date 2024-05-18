@@ -1,6 +1,6 @@
 {
   "name": "vs-code-slider",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "type": "module",
   "main": "lib/vs-code-slider.es.js",
   "author": "aydk-xcc",
@@ -10,12 +10,17 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aydk-xcc/vs-code-slider"
+  },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.7.0",
     "monaco-editor": "0.47.0",
     "pinia": "^2.1.7",
     "sass": "^1.75.0",
+    "uuid": "^9.0.1",
     "vite-plugin-css-injected-by-js": "^3.5.0",
     "vue": "^3.4.21"
   },

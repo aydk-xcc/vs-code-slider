@@ -2,12 +2,13 @@
     setup
     lang="ts"
 >
-import {computed, nextTick, reactive, ref} from 'vue';
+import {computed, watch, reactive, ref} from 'vue';
 import {dealFilePath, fileSorts, getFileIcon} from './utils/utils';
-import {ElTree} from 'element-plus';
+import {ElTree, ElInput} from 'element-plus';
 import {ArrowRightBold} from '@element-plus/icons-vue';
 import RightContentMenu from './components/RightContentMenu.vue';
 import {errorInfo} from './config/config';
+import { v4 as uuidv4 } from 'uuid';
 
 declare interface FileData {
     name: string;
@@ -17,11 +18,17 @@ declare interface FileData {
     children?: Array<FileData>;
 };
 
+interface Tree {
+    [key: string]: any
+}
+
+
 let props = defineProps<{
     baseDir: string,
     theme: string,
     width: number,
     files: string[],
+    allowDrag?: boolean,
     bgColor: string,
     defaultOpen: string,
     currentFile: string,
@@ -38,6 +45,8 @@ const errorInfoPosition = reactive({
     top: 0,
     width: 0
 })
+const searchText = ref('');
+const showSearchStatus = ref(false);
 
 const width = ref(props.width || 280);
 const openAllState = ref(false);
@@ -115,47 +124,65 @@ function expandRecursive(node, value) {
 }
 
 function openNode() {
-    let currentNode = elTreeRef.value.getCurrentNode();
-    if (currentNode.isDir) {
-        let childNodes = elTreeRef.value.store.root.childNodes;
-        let path = currentNode.path.split('/');
-        let index =  0;
-        while(index < path.length) {
-            let node = childNodes.find(item => item.data.name === path[index]);
-            if (index === path.length - 1) {
-                node.expanded = true;
-                break;
-            } else {
-                childNodes = node.childNodes;
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            let currentNode = elTreeRef.value.getCurrentNode();
+            if (currentNode.isDir) {
+                let childNodes = elTreeRef.value.store.root.childNodes;
+                let path = currentNode.path.split('/').filter(item => item !== '');
+                let index =  0;
+                while(index < path.length) {
+                    let node = childNodes.find(item => item.data.name === path[index]);
+                    if (index === path.length - 1) {
+                        node.expanded = true;
+                        break;
+                    } else {
+                        childNodes = node.childNodes;
+                    }
+                    index++;
+                }
             }
-            index++;
-        }
-    }
+            setTimeout(() => {
+                resolve();
+            }, 50);
+        }, 50)
+    })
 }
 
 /**
  * 添加目录
  */
 function addFolder() {
-    if (elTreeRef.value.getCurrentNode()) {
-        let child = elTreeRef.value.getCurrentNode().children[0];
-        let node = elTreeRef.value.getNode(child.path)
-        elTreeRef.value.insertBefore({
-            children: [],
-            isNew: true,
-            isDir: true,
-            name: '',
-            path: ''
-        }, node);
-        nextTick(() => {
-            openNode();
-            setTimeout(() => {
-                addInputRef.value && addInputRef.value.focus();
-                let rect = addInputRef.value.input.getBoundingClientRect();
-                errorInfoPosition.left = rect.left - 12;
-                errorInfoPosition.top = rect.top + 26;
-                errorInfoPosition.width = rect.width + 22;
-            }, 200);
+    let currentNode = elTreeRef.value.getCurrentNode();
+    if (currentNode) {
+        let child = currentNode.children[0];
+        if (child) {
+            // 非空目录
+            let node = elTreeRef.value.getNode(child.key)
+            elTreeRef.value.insertBefore({
+                children: [],
+                key: uuidv4(),
+                isNew: true,
+                isDir: true,
+                name: '',
+                path: `${currentNode.path}__default__/`
+            }, node);
+        } else {
+            elTreeRef.value.append({
+                children: [],
+                isNew: true,
+                key: uuidv4(),
+                isDir: true,
+                name: '',
+                path: `${currentNode.path}__default__/`
+            }, currentNode);
+        }
+        openNode().then(res => {
+            addInputRef.value && addInputRef.value.focus();
+            let rect = addInputRef.value.input.getBoundingClientRect();
+            errorInfoPosition.left = rect.left - 12;
+            errorInfoPosition.top = rect.top + 26;
+            errorInfoPosition.width = rect.width + 22;
         });
     } else {
 
@@ -166,23 +193,22 @@ function addFolder() {
  * 添加文件
  */
 function addFile() {
-    if (elTreeRef.value.getCurrentNode()) {
+    let currentNode = elTreeRef.value.getCurrentNode();
+    if (currentNode) {
         elTreeRef.value.append({
             children: [],
             isNew: true,
+            key: uuidv4(),
             isDir: false,
             name: '',
-            path: ''
-        }, elTreeRef.value.getCurrentNode());
-        nextTick(() => {
-            openNode();
-            setTimeout(() => {
-                addInputRef.value && addInputRef.value.focus();
-                let rect = addInputRef.value.input.getBoundingClientRect();
-                errorInfoPosition.left = rect.left - 12;
-                errorInfoPosition.top = rect.top + 26;
-                errorInfoPosition.width = rect.width + 22;
-            }, 200);
+            path: `${currentNode.path}__default__`
+        }, currentNode);
+        openNode().then(res => {
+            addInputRef.value && addInputRef.value.focus();
+            let rect = addInputRef.value.input.getBoundingClientRect();
+            errorInfoPosition.left = rect.left - 12;
+            errorInfoPosition.top = rect.top + 26;
+            errorInfoPosition.width = rect.width + 22;
         });
     } else {
 
@@ -218,6 +244,7 @@ function createFile(data, node, type) {
         } else {
             data.isNew = false;
             data.name = newName;
+            data.path = data.path.replace('__default__', newName);
             newFileName.value = '';
             createError.value = '';
             if (data.isDir) {
@@ -251,6 +278,31 @@ function clickMenu(key) {
     }
 }
 
+function allowDrop(draggingNode, dropNode, type) {
+    if (!dropNode.data.isDir) {
+        return false;
+    }
+    return true;
+}
+
+watch(searchText, (val) => {
+    elTreeRef.value!.filter(val)
+})
+
+function filterNode(value: string, data: Tree, node) {
+    if (!value) return true;
+    return data.name.includes(value);
+}
+
+function showSearch() {
+    showSearchStatus.value = true;
+}
+
+function hiddenSearch() {
+    searchText.value = '';
+    showSearchStatus.value = false;
+}
+
 </script>
 
 <template>
@@ -268,6 +320,7 @@ function clickMenu(key) {
                 <i
                     class="icon iconfont vs-find cursor-pointer"
                     title="查找文件"
+                    @click="showSearch"
                 ></i>
                 <i
                     v-if="showAddFolder"
@@ -299,6 +352,21 @@ function clickMenu(key) {
                     @click="closeAll"
                 ></i>
             </div>
+            <div
+                v-if="showSearchStatus"
+                class="search"
+            >
+                <ElInput
+                    v-model="searchText"
+                    size="mini"
+                    placeholder="输入文件名称"
+                />
+                <el-button
+                    size="mini"
+                    type="text"
+                    @click="hiddenSearch"
+                >取消</el-button>
+            </div>
         </div>
         <div
             class="el-tree-view"
@@ -309,11 +377,13 @@ function clickMenu(key) {
                 ref="elTreeRef"
                 :data="fileList"
                 :default-expanded-keys="defaultExpandKeys"
-                :draggable="true"
+                :draggable="!!props.allowDrag"
+                :filter-node-method="filterNode"
                 :icon="ArrowRightBold"
-                node-key="path"
+                node-key="key"
                 :highlight-current="true"
                 :props="defaultProps"
+                :allow-drop="allowDrop"
                 @node-click="handleNodeClick"
                 @node-contextmenu="handleContentMenuClick"
             >
@@ -339,7 +409,7 @@ function clickMenu(key) {
                             class="create_file"
                             :class="createError ? 'error' : ''"
                         >
-                            <el-input
+                            <ElInput
                                 ref="addInputRef"
                                 v-model="newFileName"
                                 @keyup.enter="createFile(data, node, 'entry')"
@@ -437,6 +507,23 @@ function clickMenu(key) {
     height: 30px;
     justify-content: space-between;
     padding: 0 10px;
+
+    .search {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: flex;
+        width: 100%;
+        background-color: #f2f2f2;
+
+        :deep(.el-input__wrapper) {
+            border-radius: 0;
+        }
+
+        :deep(.el-button) {
+            margin: 0 5px;
+        }
+    }
 
 }
 

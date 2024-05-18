@@ -31,6 +31,8 @@ declare interface FileData {
     children?: Array<FileData>;
 };
 
+import { v4 as uuidv4 } from 'uuid';
+
 export function dealFilePath(filePaths: Array<string>) {
     let fileArr: Array<FileData> = [];
     filePaths.forEach(path => {
@@ -46,6 +48,7 @@ export function dealFilePath(filePaths: Array<string>) {
                     if (isDir) {
                         tempArr.push({
                             name: paths[start],
+                            key: uuidv4(),
                             path: path,
                             isDir: isDir,
                             children: []
@@ -53,6 +56,7 @@ export function dealFilePath(filePaths: Array<string>) {
                     } else {
                         tempArr.push({
                             name: paths[start],
+                            key: uuidv4(),
                             path: path,
                             isDir: isDir
                         });
@@ -62,6 +66,7 @@ export function dealFilePath(filePaths: Array<string>) {
                 if (!isExist || index < 0 || !tempArr[index].isDir) {
                     tempArr.push({
                         name: paths[start],
+                        key: uuidv4(),
                         path: paths.slice(0, start + 1).join('/'),
                         isDir: true,
                         children: []
